@@ -10,16 +10,26 @@ export default class TripPresenter {
     this.filtersContainer = document.querySelector('.trip-controls__filters');
     this.eventsContainer = document.querySelector('.trip-events');
     this.mainContainer = document.querySelector('.trip-main');
+    this.pointsListContainer = null; 
+  }
+
+  createPointsList() {
+    const listElement = document.createElement('ul');
+    listElement.className = 'trip-events__list';
+    this.eventsContainer.appendChild(listElement);
+    this.pointsListContainer = listElement;
   }
 
   init() {
     render(new InfoView(), this.mainContainer, RenderPosition.AFTERBEGIN);
     render(new FilterView(), this.filtersContainer);
-    render(new EditPointView(), this.eventsContainer, RenderPosition.AFTERBEGIN);
     render(new SortView(), this.eventsContainer, RenderPosition.AFTERBEGIN);
 
+    this.createPointsList();
+    render(new EditPointView(), this.pointsListContainer);
+    
     for (let i = 0; i < 3; i++) {
-      render(new PointView(), this.eventsContainer);
+      render(new PointView(), this.pointsListContainer);
     }
   }
 }
