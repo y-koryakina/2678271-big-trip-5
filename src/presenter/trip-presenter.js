@@ -24,10 +24,8 @@ export default class TripPresenter {
     render(new InfoView(), this.mainContainer, RenderPosition.AFTERBEGIN);
     render(new FilterView(), this.filtersContainer);
     render(new SortView(), this.eventsContainer, RenderPosition.AFTERBEGIN);
-
     this.createPointsList();
     render(new EditPointView(), this.pointsListContainer);
-    
     for (let i = 0; i < 3; i++) {
       render(new PointView(), this.pointsListContainer);
     }
