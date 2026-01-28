@@ -1,9 +1,10 @@
-import {createElement} from '../render.js';
 import {EVENT_TYPES} from '../const.js';
 import {
   formatDate,
   formatTime,
 } from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+
 
 function createEditPointTemplate(point = {}, destinations = [], offers = {}) {
   const {
@@ -172,26 +173,15 @@ function createEditPointTemplate(point = {}, destinations = [], offers = {}) {
   `;
 }
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView{
   constructor({point = null, destinations = [], offers = {}}) {
+    super();
     this.point = point;
     this.destinations = destinations;
     this.offers = offers;
   }
 
-  getTemplate() {
+  get template() {
     return createEditPointTemplate(this.point, this.destinations, this.offers);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

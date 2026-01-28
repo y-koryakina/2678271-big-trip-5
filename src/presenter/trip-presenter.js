@@ -4,8 +4,7 @@ import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
 import InfoView from '../view/trip-info-view.js';
 import PointListView from '../view/point-list-view.js';
-import { render, RenderPosition } from '../render.js';
-
+import { render, RenderPosition } from '../framework/render.js';
 export default class TripPresenter {
   constructor(tripModel) {
     this.model = tripModel;
@@ -24,7 +23,7 @@ export default class TripPresenter {
 
     const pointListView = new PointListView();
     render(pointListView, this.eventsContainer);
-    const pointsListContainer = pointListView.getElement();
+    const pointsListContainer = pointListView.element;
 
     const edPointView = new EditPointView({point: points[0], destinations, offers});
     render(edPointView, pointsListContainer);
