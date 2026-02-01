@@ -29,5 +29,9 @@
     "not ie <= 11",
     "not op_mini all",
     "not < 0.25%"
-  ]
+  ],
+  "dependencies": {
+    "css-loader": "^6.7.3",
+    "style-loader": "^3.3.2"
+  }
 }
