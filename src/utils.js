@@ -90,12 +90,12 @@ const getInfoTitle = (points, destinations) => {
     return '';
   }
 
-  const destinationNames = points.map((point) => {
+  let destinationNames = points.map((point) => {
     const destination = destinations.find((d) => d.id === point.destination);
     return destination ? destination.name : '';
   });
 
-  destinationNames.filter((element) => element);
+  destinationNames = destinationNames.filter((element) => element);
 
   if (destinationNames.length <= 3) {
     return destinationNames.join(' — ');
