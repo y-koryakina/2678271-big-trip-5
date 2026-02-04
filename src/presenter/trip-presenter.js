@@ -4,8 +4,11 @@ import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
 import InfoView from '../view/trip-info-view.js';
 import PointListView from '../view/point-list-view.js';
+import NoPointsView from '../view/no-points-view.js';
 import { render, replace, RenderPosition } from '../framework/render.js';
+import {getInfoTitle, getInfoDates, getTotalCost, countFuturePoints, countPresentPoints, countPastPoints} from '../utils.js';
 export default class TripPresenter {
+
   constructor(tripModel) {
     this.model = tripModel;
 
@@ -17,17 +20,34 @@ export default class TripPresenter {
   init() {
     const { points, destinations, offers } = this.model;
 
-    render(new InfoView(), this.mainContainer, RenderPosition.AFTERBEGIN);
-    render(new FilterView(), this.filtersContainer);
-    render(new SortView(), this.eventsContainer, RenderPosition.AFTERBEGIN);
+    const infoData = {
+      title: getInfoTitle(points, destinations),
+      dates: getInfoDates(points),
+      totalCost: getTotalCost(points, offers)
+    };
 
-    const pointListView = new PointListView();
-    render(pointListView, this.eventsContainer);
-    const pointsListContainer = pointListView.element;
+    const filtersInfo = {
+      future: countFuturePoints(points),
+      present: countPresentPoints(points),
+      past: countPastPoints(points)
+    };
 
-    points.forEach((point) => {
-      this.#renderPoint(point, destinations, offers, pointsListContainer);
-    });
+    render(new InfoView(infoData), this.mainContainer, RenderPosition.AFTERBEGIN);
+    render(new FilterView(filtersInfo), this.filtersContainer);
+
+    if (!points || !points.length) {
+      render(new NoPointsView(), this.eventsContainer);
+    } else {
+      render(new SortView(), this.eventsContainer, RenderPosition.AFTERBEGIN);
+
+      const pointListView = new PointListView();
+      render(pointListView, this.eventsContainer);
+      const pointsListContainer = pointListView.element;
+
+      points.forEach((point) => {
+        this.#renderPoint(point, destinations, offers, pointsListContainer);
+      });
+    }
   }
 
   #renderPoint(point, destinations, offers, container) {
@@ -39,7 +59,7 @@ export default class TripPresenter {
       }
     };
 
-    const closeHandler = () => { //нейминг
+    const closeHandler = () => {
       replaceFormToCard();
       document.removeEventListener('keydown', escKeyDownHandler);
     };
