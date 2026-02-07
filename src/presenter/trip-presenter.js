@@ -1,13 +1,21 @@
 import FilterView from '../view/filter-view.js';
 import SortView from '../view/sort-view.js';
-import EditPointView from '../view/edit-point-view.js';
-import PointView from '../view/point-view.js';
 import InfoView from '../view/trip-info-view.js';
-import PointListView from '../view/point-list-view.js';
 import NoPointsView from '../view/no-points-view.js';
-import { render, replace, RenderPosition } from '../framework/render.js';
-import {getInfoTitle, getInfoDates, getTotalCost, countFuturePoints, countPresentPoints, countPastPoints} from '../utils.js';
+import { render, RenderPosition } from '../framework/render.js';
+import PointPresenter from './point-presenter.js';
+
+import {
+  getInfoTitle,
+  getInfoDates,
+  getTotalCost,
+  countFuturePoints,
+  countPresentPoints,
+  countPastPoints,
+} from '../utils.js';
+
 export default class TripPresenter {
+  #pointPresenters = new Map();
 
   constructor(tripModel) {
     this.model = tripModel;
@@ -23,72 +31,59 @@ export default class TripPresenter {
     const infoData = {
       title: getInfoTitle(points, destinations),
       dates: getInfoDates(points),
-      totalCost: getTotalCost(points, offers)
+      totalCost: getTotalCost(points, offers),
     };
 
     const filtersInfo = {
       future: countFuturePoints(points),
       present: countPresentPoints(points),
-      past: countPastPoints(points)
+      past: countPastPoints(points),
     };
 
     render(new InfoView(infoData), this.mainContainer, RenderPosition.AFTERBEGIN);
     render(new FilterView(filtersInfo), this.filtersContainer);
 
-    if (!points || !points.length) {
+    if (!points || points.length === 0) {
       render(new NoPointsView(), this.eventsContainer);
-    } else {
-      render(new SortView(), this.eventsContainer, RenderPosition.AFTERBEGIN);
-
-      const pointListView = new PointListView();
-      render(pointListView, this.eventsContainer);
-      const pointsListContainer = pointListView.element;
-
-      points.forEach((point) => {
-        this.#renderPoint(point, destinations, offers, pointsListContainer);
-      });
+      return;
     }
+
+    render(new SortView(), this.eventsContainer, RenderPosition.AFTERBEGIN);
+
+    this.#clearPoints();
+    this.#renderPoints(points, destinations, offers);
   }
 
-  #renderPoint(point, destinations, offers, container) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
 
-    const closeHandler = () => {
-      replaceFormToCard();
-      document.removeEventListener('keydown', escKeyDownHandler);
-    };
+  #handlePointChange = (updatedPoint) => {
+    const index = this.model.points.findIndex((p) => p.id === updatedPoint.id);
 
-    const taskComponent = new PointView({
-      point, destinations, offers,
-      onArrowClick: () => {
-        replaceCardToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      },
+    this.model.points[index] = updatedPoint;
+
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #clearPoints() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+  }
+
+  #renderPoints(points, destinations, offers) {
+    points.forEach((point) => {
+      const pointPresenter = new PointPresenter({
+        container: this.eventsContainer,
+        onDataChange: this.#handlePointChange,
+        onModeChange: this.#handleModeChange,
+        destinations,
+        offers,
+      });
+
+      pointPresenter.init(point);
+
+      this.#pointPresenters.set(point.id, pointPresenter);
     });
-
-    const taskEditComponent = new EditPointView({
-      point, destinations, offers,
-      onFormSubmit: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-      onArrowClick: closeHandler
-    });
-
-    function replaceCardToForm() {
-      replace(taskEditComponent, taskComponent);
-    }
-
-    function replaceFormToCard() {
-      replace(taskComponent, taskEditComponent);
-    }
-
-    render(taskComponent, container);
   }
 }
