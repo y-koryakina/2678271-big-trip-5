@@ -51,9 +51,18 @@ const OFFERS = {
   restaurant: ['Wine pairing', 'Dessert']
 };
 
+const SORT_TYPE = {
+  DAY: 'day',
+  TIME: 'time',
+  PRICE: 'price',
+  EVENT: 'event',
+  OFFER: 'offer'
+};
+
 export {
   EVENT_TYPES,
   CITIES,
   LOREM_IPSUM_SENTENCES,
-  OFFERS
+  OFFERS,
+  SORT_TYPE
 };

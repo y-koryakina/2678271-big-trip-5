@@ -4,6 +4,7 @@ import InfoView from '../view/trip-info-view.js';
 import NoPointsView from '../view/no-points-view.js';
 import { render, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
+import { SORT_TYPE } from '../const.js';
 
 import {
   getInfoTitle,
@@ -16,7 +17,7 @@ import {
 
 export default class TripPresenter {
   #pointPresenters = new Map();
-  #currentSortType = 'day';
+  #currentSortType = SORT_TYPE.DAY;
 
   constructor(tripModel) {
     this.model = tripModel;
@@ -50,7 +51,7 @@ export default class TripPresenter {
     }
 
     render(new SortView({onSortChange: this.#handleSortChange}), this.eventsContainer, RenderPosition.AFTERBEGIN);
-    const sortedPoints = this.#sortPoints(this.model.points, 'day');
+    const sortedPoints = this.#sortPoints(this.model.points, SORT_TYPE.DAY);
     this.#clearPoints();
     this.#renderPoints(sortedPoints, destinations, offers);
   }
@@ -105,11 +106,11 @@ export default class TripPresenter {
     const sortedPoints = [...points];
 
     switch (sortType) {
-      case 'day':
+      case SORT_TYPE.DAY:
         sortedPoints.sort((a, b) => new Date(a.dateFrom) - new Date(b.dateFrom));
         break;
 
-      case 'time':
+      case SORT_TYPE.TIME:
         sortedPoints.sort((a, b) => {
           const durationA = new Date(a.dateTo) - new Date(a.dateFrom);
           const durationB = new Date(b.dateTo) - new Date(b.dateFrom);
@@ -117,7 +118,7 @@ export default class TripPresenter {
         });
         break;
 
-      case 'price':
+      case SORT_TYPE.PRICE:
         sortedPoints.sort((a, b) => b.basePrice - a.basePrice);
         break;
 
