@@ -51,9 +51,9 @@ export default class TripPresenter {
     }
 
     render(new SortView({onSortChange: this.#handleSortChange}), this.eventsContainer, RenderPosition.AFTERBEGIN);
-    const sortedPoints = this.#sortPoints(this.model.points, SORT_TYPE.DAY);
-    this.#clearPoints();
-    this.#renderPoints(sortedPoints, destinations, offers);
+
+    this.#renderSortedpoints(this.#currentSortType);
+
   }
 
   #handleModeChange = () => {
@@ -66,11 +66,7 @@ export default class TripPresenter {
     }
     this.#currentSortType = sortType;
 
-    const sortedPoints = this.#sortPoints(this.model.points, sortType);
-
-    this.#clearPoints();
-    this.#renderPoints(sortedPoints, this.model.destinations, this.model.offers);
-
+    this.#renderSortedpoints(sortType);
   };
 
   #handlePointChange = (updatedPoint) => {
@@ -127,5 +123,11 @@ export default class TripPresenter {
         break;
     }
     return sortedPoints;
+  };
+
+  #renderSortedpoints = (sortType) => {
+    const sortedPoints = this.#sortPoints(this.model.points, sortType);
+    this.#clearPoints();
+    this.#renderPoints(sortedPoints, this.model.destinations, this.model.offers);
   };
 }
