@@ -53,6 +53,16 @@ export default class SortView extends AbstractView {
 
   #SortHandlerChange = (evt) => {
     const sortType = evt.currentTarget.dataset.sortType;
+
+    document.querySelectorAll('input[name="trip-sort"]').forEach((input) => {
+      input.checked = false;
+      input.removeAttribute('checked');
+    });
+    const parentDiv = evt.currentTarget.closest('.trip-sort__item');
+    const targetInput = parentDiv.querySelector('input[name="trip-sort"]');
+    targetInput.checked = true;
+    targetInput.setAttribute('checked', '');
+
     this.#handleSortChange(sortType);
   };
 }
