@@ -3,6 +3,7 @@ import {
   CITIES,
   LOREM_IPSUM_SENTENCES
 } from './const.js';
+import dayjs from 'dayjs';
 
 const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
 
@@ -51,39 +52,31 @@ const getRandomType = () => getRandomArrayElement(EVENT_TYPES);
 
 const getRandomCity = () => getRandomArrayElement(CITIES);
 
-const MONTHS = [
-  'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-  'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
-];
+const formatDate = (date) => dayjs(date).format('MMM DD').toUpperCase();
 
-const formatDate = (date) => {
-  const month = MONTHS[date.getMonth()];
-  const day = date.getDate().toString().padStart(2, '0');
-  return `${month} ${day}`;
-};
 
-const formatTime = (date) => date.toTimeString().slice(0, 5);
+const formatTime = (date) => dayjs(date).format('HH:mm');
 
 const calculateDuration = (dateFrom, dateTo) => {
-  const diffInMs = dateTo - dateFrom;
-  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-
+  const start = dayjs(dateFrom);
+  const end = dayjs(dateTo);
+  const diffInMinutes = end.diff(start, 'minute');
   const hours = Math.floor(diffInMinutes / 60);
   const minutes = diffInMinutes % 60;
 
-  if (hours > 0) {
-    return `${hours}H ${minutes.toString().padStart(2, '0')}M`;
+  if (hours === 0) {
+    return `${minutes}M`;
+  } else if (minutes === 0) {
+    return `${hours}H`;
+  } else {
+    return `${hours}H ${minutes}M`;
   }
-  return `${minutes}M`;
 };
 
-const formatDateTime = (date) => date.toISOString().slice(0, 16);
+const formatDateTime = (date) => dayjs(date).format('YYYY-MM-DDTHH:mm');
 
-const formatDateForTitle = (date) => {
-  const month = MONTHS[date.getMonth()];
-  const day = date.getDate().toString().padStart(2, '0');
-  return `${day} ${month.toUpperCase()}`;
-};
+const formatDateForTitle = (date) => dayjs(date).format('DD MMM').toUpperCase();
+
 
 const getInfoTitle = (points, destinations) => {
   if (!points || !points.length) {
