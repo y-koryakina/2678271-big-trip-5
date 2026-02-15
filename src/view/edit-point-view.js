@@ -174,7 +174,6 @@ function createEditPointTemplate(point = {}, destinations = [], offers = {}) {
 }
 
 export default class EditPointView extends AbstractStatefulView{
-  #point = null;
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
@@ -243,7 +242,7 @@ export default class EditPointView extends AbstractStatefulView{
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this._state);
   };
 
   #ArrowClickHandler = () => {
