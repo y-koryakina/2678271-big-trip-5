@@ -215,9 +215,9 @@ export default class EditPointView extends AbstractStatefulView{
   }
 
   #setTypeChangeHandler() {
-    const typeInputs = this.element.querySelectorAll('input[name="event-type"]');
-    typeInputs.forEach((input) => {
-      input.addEventListener('change', (evt) => {
+    const typeGroup = this.element.querySelector('.event__type-group');
+    typeGroup.addEventListener('change', (evt) => {
+      if (evt.target.name === 'event-type') {
         evt.preventDefault();
         const newType = evt.target.value;
 
@@ -225,7 +225,7 @@ export default class EditPointView extends AbstractStatefulView{
           type: newType,
           offers: []
         });
-      });
+      }
     });
   }
 
