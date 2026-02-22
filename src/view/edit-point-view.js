@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 import 'flatpickr/dist/flatpickr.min.css';
 
 
-function createEditPointTemplate(point = {}, destinations = [], offers = {}) {
+function createEditPointTemplate(point = {}, destinations = [], offers = {}, isNewPoint = false) {
   const {
     type = EVENT_TYPES[0],
     destination: destinationId = '',
@@ -164,10 +164,8 @@ function createEditPointTemplate(point = {}, destinations = [], offers = {}) {
           </div>
 
           <button class="event__save-btn btn btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">${point.id ? 'Delete' : 'Cancel'}</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          <button class="event__reset-btn" type="reset">${!isNewPoint ? 'Delete' : 'Cancel'}</button>
+          ${!isNewPoint ? '<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>' : ''}
         </header>
         <section class="event__details">
           ${offersTemplate}
@@ -182,22 +180,37 @@ export default class EditPointView extends AbstractStatefulView{
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
+  #handlePointDelete = null;
   #handleArrowClick = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #isNewPoint = false;
 
 
-  constructor({point = null, destinations = [], offers = {}, onFormSubmit, onArrowClick}) {
+  constructor({point = null, destinations = [], offers = {}, onFormSubmit, onPointDelete, onArrowClick = null}) {
     super();
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleFormSubmit = onFormSubmit;
+    this.#handlePointDelete = onPointDelete;
     this.#handleArrowClick = onArrowClick;
+    this.#isNewPoint = point === null;
 
-    this._setState({
-      ...point,
-    });
+    const initialState = point || this.#getDefaultPoint();
+    this._setState({ ...initialState });
 
+  }
+
+  #getDefaultPoint() {
+    return {
+      type: 'flight',
+      destination: 'madrid',
+      dateFrom: new Date(),
+      dateTo: new Date(),
+      basePrice: 0,
+      offers: [],
+      isFavorite: false
+    };
   }
 
   removeElement() {
@@ -274,7 +287,7 @@ export default class EditPointView extends AbstractStatefulView{
   }
 
   get template() {
-    return createEditPointTemplate(this._state, this.#destinations, this.#offers);
+    return createEditPointTemplate(this._state, this.#destinations, this.#offers, this.#isNewPoint);
   }
 
   _createElement() {
@@ -286,8 +299,13 @@ export default class EditPointView extends AbstractStatefulView{
   _restoreHandlers() {
     this.element.querySelector('.event--edit')
       .addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#ArrowClickHandler);
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#pointDeleteHandler);
+
+    const rollupBtn = this.element.querySelector('.event__rollup-btn');
+    if (rollupBtn && !this.#isNewPoint) {
+      rollupBtn.addEventListener('click', this.#ArrowClickHandler);
+    }
 
     this.#setTypeChangeHandler();
     this.#setDestinationChangeHandler();
@@ -323,8 +341,14 @@ export default class EditPointView extends AbstractStatefulView{
   }
 
   #formSubmitHandler = (evt) => {
+
     evt.preventDefault();
     this.#handleFormSubmit(this._state);
+  };
+
+  #pointDeleteHandler = (evt) => {
+    evt.preventDefault();
+    this.#handlePointDelete(this._state);
   };
 
   #ArrowClickHandler = () => {

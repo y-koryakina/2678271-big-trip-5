@@ -11,12 +11,12 @@ const getRandomInteger = (min, max) => Math.floor(Math.random() * (max - min + 1
 
 const getRandomDate = () => {
   const now = new Date();
-  const futureDate = new Date();
-  futureDate.setDate(now.getDate() + getRandomInteger(1, 30));
-  futureDate.setHours(getRandomInteger(0, 23), getRandomInteger(0, 59));
-  return futureDate;
+  const offsetDays = getRandomInteger(-30, 30);
+  const randomDate = new Date(now);
+  randomDate.setDate(now.getDate() + offsetDays);
+  randomDate.setHours(getRandomInteger(0, 23), getRandomInteger(0, 59));
+  return randomDate;
 };
-
 const getRandomEndDate = (startDate) => {
   const endDate = new Date(startDate);
   endDate.setHours(endDate.getHours() + getRandomInteger(1, 12));

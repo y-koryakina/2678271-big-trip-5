@@ -57,10 +57,32 @@ const SORT_TYPE = {
   PRICE: 'price'
 };
 
+const USER_ACTION = {
+  UPDATE_TASK: 'UPDATE_TASK',
+  ADD_TASK: 'ADD_TASK',
+  DELETE_TASK: 'DELETE_TASK',
+};
+
+const UPDATE_TYPE = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const FilterType = {
+  ALL: 'all',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
 export {
   EVENT_TYPES,
   CITIES,
   LOREM_IPSUM_SENTENCES,
   OFFERS,
-  SORT_TYPE
+  SORT_TYPE,
+  USER_ACTION,
+  UPDATE_TYPE,
+  FilterType
 };
