@@ -312,7 +312,6 @@ export default class EditPointView extends AbstractStatefulView{
 
     this.#setDatepickers();
     this.#setOffersChangeHandler();
-    this.#setPriceChangeHandler();
   }
 
   #setOffersChangeHandler() {
@@ -338,19 +337,6 @@ export default class EditPointView extends AbstractStatefulView{
           offers: newOffers
         });
       }
-    });
-  }
-
-  #setPriceChangeHandler() {
-    const priceInput = this.element.querySelector('.event__input--price');
-
-    priceInput.addEventListener('input', (evt) => {
-      evt.preventDefault();
-      const newPrice = parseInt(evt.target.value, 10) || 0;
-
-      this.updateElement({
-        basePrice: newPrice
-      });
     });
   }
 
@@ -384,7 +370,13 @@ export default class EditPointView extends AbstractStatefulView{
   #formSubmitHandler = (evt) => {
 
     evt.preventDefault();
-    this.#handleFormSubmit(this._state);
+    const priceInput = this.element.querySelector('.event__input--price');
+    const price = parseInt(priceInput.value, 10) || 0;
+    const updatedPoint = {
+      ...this._state,
+      basePrice: price,
+    };
+    this.#handleFormSubmit(updatedPoint);
   };
 
   #pointDeleteHandler = (evt) => {
