@@ -311,6 +311,47 @@ export default class EditPointView extends AbstractStatefulView{
     this.#setDestinationChangeHandler();
 
     this.#setDatepickers();
+    this.#setOffersChangeHandler();
+    this.#setPriceChangeHandler();
+  }
+
+  #setOffersChangeHandler() {
+    const offersContainer = this.element.querySelector('.event__available-offers');
+    if (!offersContainer) {
+      return;
+    }
+
+    offersContainer.addEventListener('change', (evt) => {
+      if (evt.target.classList.contains('event__offer-checkbox')) {
+        const offerId = evt.target.value;
+        const isChecked = evt.target.checked;
+
+        let newOffers = [...this._state.offers];
+
+        if (isChecked) {
+          newOffers.push(offerId);
+        } else {
+          newOffers = newOffers.filter((id) => id !== offerId);
+        }
+
+        this.updateElement({
+          offers: newOffers
+        });
+      }
+    });
+  }
+
+  #setPriceChangeHandler() {
+    const priceInput = this.element.querySelector('.event__input--price');
+
+    priceInput.addEventListener('input', (evt) => {
+      evt.preventDefault();
+      const newPrice = parseInt(evt.target.value, 10) || 0;
+
+      this.updateElement({
+        basePrice: newPrice
+      });
+    });
   }
 
   #setTypeChangeHandler() {
