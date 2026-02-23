@@ -47,8 +47,9 @@ export default class TripPresenter {
   }
 
   init() {
-    const { points, destinations, offers } = this.#model;
+    const {destinations, offers } = this.#model;
 
+    const points = this.points;
     const infoData = {
       title: getInfoTitle(points, destinations),
       dates: getInfoDates(points),
@@ -58,7 +59,9 @@ export default class TripPresenter {
     render(new InfoView(infoData), this.mainContainer, RenderPosition.AFTERBEGIN);
 
     if (!points || points.length === 0) {
-      render(new NoPointsView(), this.eventsContainer);
+
+
+      render(new NoPointsView({filter: this.#filterModel.filter}), this.eventsContainer);
       return;
     }
 
