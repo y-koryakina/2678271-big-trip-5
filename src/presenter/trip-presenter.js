@@ -151,7 +151,6 @@ export default class TripPresenter {
         this.#renderPoints(this.points, this.#model.destinations, this.#model.offers);
         break;
       case UPDATE_TYPE.MAJOR:
-        console.log("dsfd");
         this.#clearPoints();
         if (oldInfo) {
           oldInfo.remove();
