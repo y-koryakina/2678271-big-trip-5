@@ -33,8 +33,17 @@ export default class NewPointPresenter {
     this.#pointEditComponent. _restoreHandlers();
 
     render(this.#pointEditComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
+    this.putNewFormAfterSort();
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
+  }
+
+  putNewFormAfterSort(){
+    if (this.#pointListContainer.children.length >= 2) {
+      const first = this.#pointListContainer.children[0];
+      const second = this.#pointListContainer.children[1];
+      this.#pointListContainer.insertBefore(second, first);
+    }
   }
 
   destroy() {

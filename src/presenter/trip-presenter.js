@@ -74,8 +74,20 @@ export default class TripPresenter {
   createPoint() {
     this.#currentSortType = SORT_TYPE.DAY;
     this.#filterModel.setFilter(UPDATE_TYPE.MAJOR, FilterType.ALL);
-
+    this.setFilterCheckToEverything();
     this.#newPointPresenter.init();
+  }
+
+  setFilterCheckToEverything() {
+    const filterInputs = document.querySelectorAll('.trip-filters__filter-input');
+    filterInputs.forEach((input) => {
+      input.checked = false;
+    });
+
+    const everythingFilter = document.querySelector('#filter-everything');
+    if (everythingFilter) {
+      everythingFilter.checked = true;
+    }
   }
 
   #handleModeChange = () => {
@@ -139,6 +151,7 @@ export default class TripPresenter {
         this.#renderPoints(this.points, this.#model.destinations, this.#model.offers);
         break;
       case UPDATE_TYPE.MAJOR:
+        console.log("dsfd");
         this.#clearPoints();
         if (oldInfo) {
           oldInfo.remove();
