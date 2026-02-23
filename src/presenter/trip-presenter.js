@@ -147,6 +147,7 @@ export default class TripPresenter {
         if (oldSort) {
           oldSort.remove();
         }
+        this.#currentSortType = SORT_TYPE.DAY;
 
         if (oldNoPoints) {
           oldNoPoints.remove();
