@@ -67,6 +67,7 @@ const UPDATE_TYPE = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  FILTER: 'FILTER',
 };
 
 const FilterType = {

@@ -16,6 +16,8 @@ export default class FilterPresenter {
 
     this.#filterModel = filterModel;
     this.#tripModel = tripModel;
+
+    this.#filterModel.addObserver(this.#handleFilterEvent);
   }
 
   get filters() {
@@ -26,6 +28,17 @@ export default class FilterPresenter {
       count: filter[type](points).length
     }));
   }
+
+  #handleFilterEvent = (updateType) => {
+    const oldFilterComponent = document.querySelector('.trip-filters');
+    switch(updateType) {
+      case UPDATE_TYPE.FILTER:
+        if (oldFilterComponent) {
+          oldFilterComponent.remove();
+        }
+        this.init();
+    }
+  };
 
   init() {
     this.#filterComponent = new FilterView({
