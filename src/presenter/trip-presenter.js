@@ -103,14 +103,6 @@ export default class TripPresenter {
     this.#renderSortedpoints();
   };
 
-  #handlePointChange = (updatedPoint) => {
-    const index = this.#model.points.findIndex((p) => p.id === updatedPoint.id);
-
-    this.#model.points[index] = updatedPoint;
-
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
-  };
-
   #handleViewAction = (actionType, updateType, update) => {
 
     switch (actionType) {
