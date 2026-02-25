@@ -6,6 +6,7 @@ import {
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import dayjs from 'dayjs';
+import { UPDATE_TYPE } from '../const.js';
 
 
 import 'flatpickr/dist/flatpickr.min.css';
@@ -185,6 +186,7 @@ export default class EditPointView extends AbstractStatefulView{
   #datepickerFrom = null;
   #datepickerTo = null;
   #isNewPoint = false;
+  #originalPoint = null;
 
 
   constructor({point = null, destinations = [], offers = {}, onFormSubmit, onPointDelete, onArrowClick = null}) {
@@ -195,10 +197,10 @@ export default class EditPointView extends AbstractStatefulView{
     this.#handlePointDelete = onPointDelete;
     this.#handleArrowClick = onArrowClick;
     this.#isNewPoint = point === null;
+    this.#originalPoint = point;
 
     const initialState = point || this.#getDefaultPoint();
     this._setState({ ...initialState });
-
   }
 
   #getDefaultPoint() {
@@ -376,7 +378,23 @@ export default class EditPointView extends AbstractStatefulView{
       ...this._state,
       basePrice: price,
     };
-    this.#handleFormSubmit(updatedPoint);
+
+    let updateType = UPDATE_TYPE.PATCH;
+
+    if (this.#originalPoint) {
+      const hasDateChanged = updatedPoint.dateFrom.getTime() !== this.#originalPoint.dateFrom.getTime() ||
+      updatedPoint.dateTo.getTime() !== this.#originalPoint.dateTo.getTime();
+
+      const hasPriceChanged =
+        updatedPoint.basePrice !== this.#originalPoint.basePrice;
+
+      if (hasDateChanged || hasPriceChanged) {
+        updateType = UPDATE_TYPE.MINOR;
+      }
+    } else {
+      updateType = UPDATE_TYPE.MINOR;
+    }
+    this.#handleFormSubmit(updatedPoint, updateType);
   };
 
   #pointDeleteHandler = (evt) => {
