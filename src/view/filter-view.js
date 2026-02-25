@@ -6,7 +6,7 @@ function createFilterTemplate(filtersInfo) {
     `
     <form class="trip-filters" action="#" method="get">
       <div class="trip-filters__filter">
-        <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" checked>
+        <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="all" checked>
         <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
       </div>
 
@@ -31,14 +31,25 @@ function createFilterTemplate(filtersInfo) {
 }
 
 export default class FilterView extends AbstractView {
-  #filtersInfo = null;
+  #filters = null;
+  #currentFilter = null;
+  #handleFilterTypeChange = null;
 
-  constructor(filtersInfo) {
+  constructor({filters, currentFilterType, onFilterTypeChange}) {
     super();
-    this.#filtersInfo = filtersInfo;
+    this.#filters = filters;
+    this.#currentFilter = currentFilterType;
+    this.#handleFilterTypeChange = onFilterTypeChange;
+
+    this.element.addEventListener('change', this.#filterTypeChangeHandler);
   }
 
   get template() {
-    return createFilterTemplate(this.#filtersInfo);
+    return createFilterTemplate(this.#filters, this.#currentFilter);
   }
+
+  #filterTypeChangeHandler = (evt) => {
+    this.#handleFilterTypeChange(evt.target.value);
+  };
+
 }
