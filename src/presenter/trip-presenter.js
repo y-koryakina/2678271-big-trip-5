@@ -78,18 +78,6 @@ export default class TripPresenter {
     this.#newPointPresenter.init();
   }
 
-  setFilterCheckToEverything() {
-    const filterInputs = document.querySelectorAll('.trip-filters__filter-input');
-    filterInputs.forEach((input) => {
-      input.checked = false;
-    });
-
-    const everythingFilter = document.querySelector('#filter-everything');
-    if (everythingFilter) {
-      everythingFilter.checked = true;
-    }
-  }
-
   #handleModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
