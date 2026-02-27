@@ -46,8 +46,8 @@ export default class TripPresenter {
 
     render(new SortView({onSortChange: this.#handleSortChange}), this.eventsContainer, RenderPosition.AFTERBEGIN);
 
-    this.#renderSortedpoints();
-
+    this.#clearPoints();
+    this.#renderPoints(this.points, this.#model.destinations, this.#model.offers);
   }
 
   createPoint() {
@@ -67,7 +67,8 @@ export default class TripPresenter {
     }
     this.#currentSortType = sortType;
 
-    this.#renderSortedpoints();
+    this.#clearPoints();
+    this.#renderPoints(this.points, this.#model.destinations, this.#model.offers);
   };
 
   #handleViewAction = (actionType, updateType, update) => {
@@ -210,10 +211,5 @@ export default class TripPresenter {
         break;
     }
     return sortedPoints;
-  };
-
-  #renderSortedpoints = () => {
-    this.#clearPoints();
-    this.#renderPoints(this.points, this.#model.destinations, this.#model.offers);
   };
 }
