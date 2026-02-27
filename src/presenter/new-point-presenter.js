@@ -2,6 +2,7 @@ import {remove, render, RenderPosition} from '../framework/render.js';
 import EditPointView from '../view/edit-point-view.js';
 import {nanoid} from 'nanoid';
 import {USER_ACTION, UPDATE_TYPE} from '../const.js';
+import { putSortUpper } from '../utils.js';
 
 export default class NewPointPresenter {
   #pointListContainer = null;
@@ -33,17 +34,9 @@ export default class NewPointPresenter {
     this.#pointEditComponent. _restoreHandlers();
 
     render(this.#pointEditComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
-    this.putNewFormAfterSort();
+    putSortUpper(this.#pointListContainer);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
-  }
-
-  putNewFormAfterSort(){
-    if (this.#pointListContainer.children.length >= 2) {
-      const first = this.#pointListContainer.children[0];
-      const second = this.#pointListContainer.children[1];
-      this.#pointListContainer.insertBefore(second, first);
-    }
   }
 
   destroy() {

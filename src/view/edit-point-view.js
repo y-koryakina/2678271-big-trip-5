@@ -23,7 +23,7 @@ function createEditPointTemplate(point = {}, destinations = [], offers = {}, isN
   } = point;
 
   const destination = destinations.find((dest) => dest.id === destinationId) || destinations[0] || {name: '', description: '', pictures: []};
-  const typeOffers = offers[type] || [];
+  const typeOffers = (offers.filter((offer) => offer.type === point.type) || [])[0].offers;
   const selectedOffers = typeOffers.filter((offer) => selectedOfferIds.includes(offer.id));
 
   const dateFormatted = formatDate(dateFrom);
@@ -206,7 +206,7 @@ export default class EditPointView extends AbstractStatefulView{
   #getDefaultPoint() {
     return {
       type: 'flight',
-      destination: 'madrid',
+      destination: this.#destinations[0].id,
       dateFrom: new Date(),
       dateTo: new Date(),
       basePrice: 0,

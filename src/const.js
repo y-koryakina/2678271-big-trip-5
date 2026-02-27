@@ -68,6 +68,7 @@ const UPDATE_TYPE = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   FILTER: 'FILTER',
+  INIT: 'INIT',
 };
 
 const FilterType = {

@@ -134,7 +134,7 @@ const getInfoDates = (points) => {
 
 function getTotalCost(points, offers) {
   return points.reduce((total, point) => {
-    const pointOffers = offers[point.type];
+    const pointOffers = offers.filter((offer) => offer.type === point.type) || [];
     const selectedOffersCost = pointOffers
       .filter((offer) => point.offers.includes(offer.id))
       .reduce((sum, offer) => sum + offer.price, 0);
@@ -159,6 +159,14 @@ const countPastPoints = (points) => {
   return points.filter((point) => new Date(point.dateTo) < now).length;
 };
 
+function putSortUpper(pointListContainer){
+  if (pointListContainer.children.length >= 2) {
+    const first = pointListContainer.children[0];
+    const second = pointListContainer.children[1];
+    pointListContainer.insertBefore(second, first);
+  }
+}
+
 export {
   getRandomArrayElement,
   getRandomInteger,
@@ -179,5 +187,6 @@ export {
   getTotalCost,
   countFuturePoints,
   countPresentPoints,
-  countPastPoints
+  countPastPoints,
+  putSortUpper
 };

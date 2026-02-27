@@ -40,7 +40,8 @@ export default class PointPresenter {
       (d) => d.id === point.destination
     );
 
-    const typeOffers = this.#offers[point.type] || [];
+    const allOffers = this.#offers;
+    const typeOffers = allOffers.filter((offer) => offer.type === point.type) || [];
 
     this.#pointComponent = new PointView({
       point: this.#point,

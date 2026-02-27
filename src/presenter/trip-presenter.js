@@ -1,11 +1,13 @@
 import SortView from '../view/sort-view.js';
 import InfoView from '../view/trip-info-view.js';
 import NoPointsView from '../view/no-points-view.js';
-import { render, RenderPosition } from '../framework/render.js';
+import { render, RenderPosition, remove} from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
 import { SORT_TYPE, UPDATE_TYPE, USER_ACTION, FilterType } from '../const.js';
 import {filter} from '../filter-util.js';
 import NewPointPresenter from './new-point-presenter.js';
+import LoadingView from '../view/loading-view.js';
+import { putSortUpper } from '../utils.js';
 
 import {
   getInfoTitle,
@@ -19,6 +21,8 @@ export default class TripPresenter {
   #filterModel = null;
   #model = null;
   #newPointPresenter = null;
+  #loadingComponent = new LoadingView();
+  #isLoading = true;
 
   constructor({tripModel, filterModel}) {
     this.#model = tripModel;
@@ -30,40 +34,15 @@ export default class TripPresenter {
     this.#model.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
 
-
-    this.#newPointPresenter = new NewPointPresenter({
-      pointListContainer: this.eventsContainer,
-      onDataChange: this.#handleViewAction,
-      destinations: this.#model.destinations,
-      offers: this.#model.offers
-    });
   }
-
 
   get points() {
     const filteredPoints = filter[this.#filterModel.filter](this.#model.points);
-
     return this.#sortPoints(filteredPoints, this.#currentSortType);
   }
 
   init() {
-    const {destinations, offers } = this.#model;
-
-    const points = this.points;
-    const infoData = {
-      title: getInfoTitle(points, destinations),
-      dates: getInfoDates(points),
-      totalCost: getTotalCost(points, offers),
-    };
-
-    render(new InfoView(infoData), this.mainContainer, RenderPosition.AFTERBEGIN);
-
-    if (!points || points.length === 0) {
-
-
-      render(new NoPointsView({filter: this.#filterModel.filter}), this.eventsContainer);
-      return;
-    }
+    this.#renderHeader();
 
     render(new SortView({onSortChange: this.#handleSortChange}), this.eventsContainer, RenderPosition.AFTERBEGIN);
 
@@ -146,8 +125,30 @@ export default class TripPresenter {
         }
         this.init();
         break;
+      case UPDATE_TYPE.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderHeader();
+
+        this.#newPointPresenter = new NewPointPresenter({
+          pointListContainer: this.eventsContainer,
+          onDataChange: this.#handleViewAction,
+          destinations: this.#model.destinations,
+          offers: this.#model.offers
+        });
+
+        this.#renderPoints(this.points, this.#model.destinations, this.#model.offers);
+        break;
     }
   };
+
+  #renderHeader(){
+    render(new InfoView({
+      title: getInfoTitle(this.#model.points, this.#model.destinations),
+      dates: getInfoDates(this.#model.points),
+      totalCost: getTotalCost(this.#model.points, this.#model.offers),
+    }), this.mainContainer, RenderPosition.AFTERBEGIN);
+  }
 
   #clearPoints() {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
@@ -155,6 +156,16 @@ export default class TripPresenter {
   }
 
   #renderPoints(points, destinations, offers) {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      putSortUpper(this.eventsContainer);
+      return;
+    }
+    if (!points || points.length === 0) {
+      render(new NoPointsView({filter: this.#filterModel.filter}), this.eventsContainer);
+      return;
+    }
+
     points.forEach((point) => {
       const pointPresenter = new PointPresenter({
         container: this.eventsContainer,
@@ -168,6 +179,10 @@ export default class TripPresenter {
 
       this.#pointPresenters.set(point.id, pointPresenter);
     });
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.eventsContainer, RenderPosition.AFTERBEGIN);
   }
 
   #sortPoints = (points, sortType) => {
