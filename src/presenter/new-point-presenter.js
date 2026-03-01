@@ -18,6 +18,13 @@ export default class NewPointPresenter {
     this.#offers = offers;
   }
 
+  setSaving() {
+    this.#pointEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
   init() {
     if (this.#pointEditComponent !== null) {
       return;
@@ -57,7 +64,6 @@ export default class NewPointPresenter {
       UPDATE_TYPE.MINOR,
       {...point},
     );
-    this.destroy();
   };
 
   #handleDeleteClick = () => {
@@ -70,4 +76,16 @@ export default class NewPointPresenter {
       this.destroy();
     }
   };
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  }
 }
